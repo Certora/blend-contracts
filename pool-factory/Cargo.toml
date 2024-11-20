@@ -12,9 +12,16 @@ doctest = false
 
 [features]
 testutils = ["soroban-sdk/testutils"]
+certora = []
 
 [dependencies]
 soroban-sdk = { workspace = true }
+nondet = {git = "https://github.com/Certora/solana-cvt.git", branch="dev-soroban", default-features=false, features=["soroban"]}
+certora = {git = "https://github.com/Certora/solana-cvt.git", branch="dev-soroban"}
+certora-soroban = {git = "https://github.com/Certora/solana-cvt.git", branch="dev-soroban"}
+certora-soroban-macros = {git = "https://github.com/Certora/solana-cvt.git", branch="dev-soroban"}
+paste = "1.0.5"
+
 
 [dev_dependencies]
 soroban-sdk = { workspace = true, features = ["testutils"] }

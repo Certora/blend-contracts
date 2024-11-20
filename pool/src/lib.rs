@@ -16,6 +16,8 @@ mod storage;
 mod testutils;
 mod validator;
 
+mod certora_specs;
+
 pub use auctions::{AuctionData, AuctionType};
 pub use contract::*;
 pub use emissions::ReserveEmissionMetadata;
