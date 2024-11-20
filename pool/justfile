@@ -1,0 +1,6 @@
+build:
+    RUSTFLAGS="-C strip=none --emit=llvm-ir" cargo build --target=wasm32-unknown-unknown --release --features certora
+
+build-llvm:
+    env RUSTFLAGS="--emit=llvm-ir" cargo build --target=wasm32-unknown-unknown --release
+    @echo "See target/wasm32-unknown-unknown/release/deps/pool.wasm.ll"
