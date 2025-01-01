@@ -11,6 +11,8 @@ build-deps:
 
 build: build-deps
     cargo rustc --crate-type=cdylib --target=wasm32-unknown-unknown --release --features certora
+    cp ../target/wasm32-unknown-unknown/release/pool.wasm ../../EVMVerifier/Test/wasm/blend-wip/.
+    wasm2wat ../target/wasm32-unknown-unknown/release/pool.wasm -o ../../EVMVerifier/Test/wasm/blend-wip/pool.wat
 
 build-llvm:
     env RUSTFLAGS="--emit=llvm-ir" cargo rustc --target=wasm32-unknown-unknown --release

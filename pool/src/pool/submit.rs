@@ -1,14 +1,22 @@
+// #[cfg(feature = "certora")]
+// use crate::certora_specs::token::TokenClient;
+use crate::constants::{GHOST_HEALTH_IS_CHECKED, IS_CHECK_HEALTH_TRUE};
+// #[cfg(not(feature = "certora"))]
 use sep_41_token::TokenClient;
+
 use soroban_sdk::{panic_with_error, Address, Env, Vec};
 
 use crate::PoolError;
 
+
 use super::{
-    actions::{build_actions_from_request, Request},
+    actions::{build_actions_from_request, Actions, Request},
     health_factor::PositionData,
     pool::Pool,
-    Positions,
+    Positions, User,
 };
+
+
 
 /// Execute a set of updates for a user against the pool.
 ///
@@ -38,8 +46,12 @@ pub fn execute_submit(
     let (actions, new_from_state, check_health) =
         build_actions_from_request(e, &mut pool, from, requests);
 
-    // panics if the new positions set does not meet the health factor requirement
-    // min is 1.0000100 to prevent rounding errors
+    unsafe {
+        IS_CHECK_HEALTH_TRUE = check_health;
+    }
+
+    // // panics if the new positions set does not meet the health factor requirement
+    // // min is 1.0000100 to prevent rounding errors
     if check_health
         && new_from_state.has_liabilities()
         && PositionData::calculate_from_positions(e, &mut pool, &new_from_state.positions)
@@ -48,19 +60,24 @@ pub fn execute_submit(
         panic_with_error!(e, PoolError::InvalidHf);
     }
 
-    // transfer tokens from sender to pool
-    for (address, amount) in actions.spender_transfer.iter() {
-        TokenClient::new(e, &address).transfer(spender, &e.current_contract_address(), &amount);
+    // // #[cfg(feature = "certora")]
+    unsafe {
+        GHOST_HEALTH_IS_CHECKED = true;
     }
+
+    // transfer tokens from sender to pool
+    // for (address, amount) in actions.spender_transfer.iter() {
+    //     TokenClient::new(e, &address).transfer(spender, &e.current_contract_address(), &amount);
+    // }
 
     // store updated info to ledger
     pool.store_cached_reserves(e);
     new_from_state.store(e);
 
     // transfer tokens from pool to "to"
-    for (address, amount) in actions.pool_transfer.iter() {
-        TokenClient::new(e, &address).transfer(&e.current_contract_address(), to, &amount);
-    }
+    // for (address, amount) in actions.pool_transfer.iter() {
+    //     TokenClient::new(e, &address).transfer(&e.current_contract_address(), to, &amount);
+    // }
 
     new_from_state.positions
 }

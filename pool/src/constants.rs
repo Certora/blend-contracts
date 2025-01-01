@@ -11,3 +11,7 @@ pub const SECONDS_PER_YEAR: i128 = 31536000;
 
 // approximate week in blocks assuming 5 seconds per block
 pub const SECONDS_PER_WEEK: u64 = 604800;
+
+// #[cfg(feature = "certora")]
+pub(crate) static mut GHOST_HEALTH_IS_CHECKED: bool = false;
+pub(crate) static mut IS_CHECK_HEALTH_TRUE: bool = false;

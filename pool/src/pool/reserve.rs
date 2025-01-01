@@ -60,55 +60,55 @@ impl Reserve {
         };
 
         // short circuit if the reserve has already been updated this ledger
-        if e.ledger().timestamp() == reserve.last_time {
-            return reserve;
-        }
+        // if e.ledger().timestamp() == reserve.last_time {
+        //     return reserve;
+        // }
 
-        if reserve.b_supply == 0 {
-            reserve.last_time = e.ledger().timestamp();
-            return reserve;
-        }
+        // if reserve.b_supply == 0 {
+        //     reserve.last_time = e.ledger().timestamp();
+        //     return reserve;
+        // }
 
-        let cur_util = reserve.utilization();
-        if cur_util == 0 {
-            // if there are no assets borrowed, we don't need to update the reserve
-            reserve.last_time = e.ledger().timestamp();
-            return reserve;
-        }
+        // let cur_util = reserve.utilization();
+        // if cur_util == 0 {
+        //     // if there are no assets borrowed, we don't need to update the reserve
+        //     reserve.last_time = e.ledger().timestamp();
+        //     return reserve;
+        // }
 
-        let (loan_accrual, new_ir_mod) = calc_accrual(
-            e,
-            &reserve_config,
-            cur_util,
-            reserve.ir_mod,
-            reserve.last_time,
-        );
-        reserve.ir_mod = new_ir_mod;
+        // let (loan_accrual, new_ir_mod) = calc_accrual(
+        //     e,
+        //     &reserve_config,
+        //     cur_util,
+        //     reserve.ir_mod,
+        //     reserve.last_time,
+        // );
+        // reserve.ir_mod = new_ir_mod;
 
-        let pre_update_supply = reserve.total_supply();
-        let pre_update_liabilities = reserve.total_liabilities();
+        // let pre_update_supply = reserve.total_supply();
+        // let pre_update_liabilities = reserve.total_liabilities();
 
-        reserve.d_rate = loan_accrual
-            .fixed_mul_ceil(reserve.d_rate, SCALAR_9)
-            .unwrap_optimized();
+        // reserve.d_rate = loan_accrual
+        //     .fixed_mul_ceil(reserve.d_rate, SCALAR_9)
+        //     .unwrap_optimized();
 
-        let accrued_interest = reserve.total_liabilities() - pre_update_liabilities;
-        if accrued_interest > 0 {
-            // credit the backstop underlying from the accrued interest based on the backstop rate
-            // update the accrued interest to reflect the amount the pool accrued
-            let mut new_backstop_credit: i128 = 0;
-            if pool_config.bstop_rate > 0 {
-                new_backstop_credit = accrued_interest
-                    .fixed_mul_floor(i128(pool_config.bstop_rate), SCALAR_7)
-                    .unwrap_optimized();
-                reserve.backstop_credit += new_backstop_credit;
-            }
-            reserve.b_rate = (pre_update_supply + accrued_interest - new_backstop_credit)
-                .fixed_div_floor(reserve.b_supply, SCALAR_9)
-                .unwrap_optimized();
-        }
+        // let accrued_interest = reserve.total_liabilities() - pre_update_liabilities;
+        // if accrued_interest > 0 {
+        //     // credit the backstop underlying from the accrued interest based on the backstop rate
+        //     // update the accrued interest to reflect the amount the pool accrued
+        //     let mut new_backstop_credit: i128 = 0;
+        //     if pool_config.bstop_rate > 0 {
+        //         new_backstop_credit = accrued_interest
+        //             .fixed_mul_floor(i128(pool_config.bstop_rate), SCALAR_7)
+        //             .unwrap_optimized();
+        //         reserve.backstop_credit += new_backstop_credit;
+        //     }
+        //     reserve.b_rate = (pre_update_supply + accrued_interest - new_backstop_credit)
+        //         .fixed_div_floor(reserve.b_supply, SCALAR_9)
+        //         .unwrap_optimized();
+        // }
 
-        reserve.last_time = e.ledger().timestamp();
+        // reserve.last_time = e.ledger().timestamp();
         reserve
     }
 

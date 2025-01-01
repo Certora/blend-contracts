@@ -13,7 +13,7 @@ COMMAND = "just build"
 
 # JSON FIELDS
 PROJECT_DIR = (SCRIPT_DIR / "../").resolve()
-SOURCES = ["pool/src/pool/*.rs", "backstop/src/*.rs", "Cargo.toml"]
+SOURCES = ["pool/src/pool/*.rs", "Cargo.toml"]
 EXECUTABLES = "target/wasm32-unknown-unknown/release/pool.wasm"
 
 VERBOSE = False
