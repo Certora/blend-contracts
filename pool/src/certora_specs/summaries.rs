@@ -8,93 +8,10 @@ use crate::pool::{
 };
 use nondet::*;
 
-/// This will not replace any recursive calls to the summarized function
-macro_rules! apply_summary {
-    (@mk_orig_module $id:ident, [$($prototype:tt)*], $( -> $ret:ty )?, $body:block) => {
-        #[cfg(feature="certora")]
-        pub(crate) mod $id {
-            use super::*;
-            #[allow(dead_code)]
-            #[allow(unused_variables)]
-            pub(crate) fn $id($($prototype)*) $( -> $ret )? $body
-        }
-    };
-    (@mk_orig $( #[$meta:meta] )*, $id:ident, [$($prototype:tt)*], $( -> $ret:ty )?, $body:block) => {
-        $( #[$meta] )*
-        $vis fn $id($($prototype)*) $( -> $ret )? $body
-    };
-    (
-        $( #[$meta:meta]  )*
-        $vis:vis fn $id:ident ($($arg:ident : $arg_ty:ty),* $(,)?) $( -> $ret:ty )?
-        $body:block
-    ) => {
-        #[cfg(feature="certora")]
-        pub(crate) fn $id($($arg : $arg_ty),*) $( -> $ret )? {
-            $crate::certora_specs::summaries::$id($($arg),*)
-        }
-
-        $crate::certora_specs::summaries::apply_summary!(
-            @mk_orig_module $id, [$($arg : $arg_ty),*], $( -> $ret  )?, $body
-        );
-
-        #[cfg(not(feature="certora"))]
-        $crate::certora_specs::summaries::apply_summary!(@mk_orig $( #[$meta] )*, $id, [$($arg : $arg_ty),*], $( -> $ret  )?, $body);
-    };
-
-    ($spec:ident, $old:ident,
-        $( #[$meta:meta]  )*
-        $vis:vis fn $id:ident (&mut $self:ident $( , )? $($arg:ident : $arg_ty:ty),* $(,)?) $( -> $ret:ty )?
-        $body:block
-    ) => {
-        #[cfg(feature="certora")]
-        pub(crate) fn $id(&mut $self, $($arg : $arg_ty),*) $( -> $ret )? {
-            $self.$spec($($arg),*)
-        }
-
-        pub(crate) fn $old(&mut $self, $($arg : $arg_ty),*) $( -> $ret )? $body
-
-        #[cfg(not(feature="certora"))]
-        $crate::certora_specs::summaries::apply_summary!(@mk_orig $( #[$meta] )*, $id, [&mut $self, $($arg : $arg_ty),*], $( -> $ret  )?, $body);
-    };
-
-    ($spec:ident, $old:ident,
-        $( #[$meta:meta]  )*
-        $vis:vis fn $id:ident (&$self:ident $( , )? $($arg:ident : $arg_ty:ty),* $(,)?) $( -> $ret:ty )?
-        $body:block
-    ) => {
-        #[cfg(feature="certora")]
-        pub(crate) fn $id(&$self, $($arg : $arg_ty),*) $( -> $ret )? {
-            $self.$spec($($arg),*)
-        }
-
-        pub(crate) fn $old(&$self, $($arg : $arg_ty),*) $( -> $ret )? $body
-
-        #[cfg(not(feature="certora"))]
-        $crate::certora_specs::summaries::apply_summary!(@mk_orig $( #[$meta] )*, $id, [&$self, $($arg : $arg_ty),*], $( -> $ret  )?, $body);
-    };
-
-    ($spec:ident, $old:ident,
-        $( #[$meta:meta]  )*
-        $vis:vis fn $id:ident ($self:ident $( , )? $($arg:ident : $arg_ty:ty),* $(,)?) $( -> $ret:ty )?
-        $body:block
-    ) => {
-        #[cfg(feature="certora")]
-        pub(crate) fn $id($self, $($arg : $arg_ty),*) $( -> $ret )? {
-            $self.$spec($($arg),*)
-        }
-
-        pub(crate) fn $old($self, $($arg : $arg_ty),*) $( -> $ret )? $body
-
-        #[cfg(not(feature="certora"))]
-        $crate::certora_specs::summaries::apply_summary!(@mk_orig $( #[$meta] )*, $id, [$self, $($arg : $arg_ty),*], $( -> $ret  )?, $body);
-    };
-}
-pub(crate) use apply_summary;
-
 /// N.B. these summaries do not model storage outside of positions,
 /// so they are unsound when considering any properties that depend on
 /// other storage
-
+///
 macro_rules! arb_positions {
     ($positions:expr, $map:ident, $amount:ident, $orig:ident, $new:expr) => {
         {
@@ -185,10 +102,10 @@ actions_summary!(build_fill_bad_debt_auction, e, from_state, {
 actions_summary!(build_fill_interest_auction, _from_state, {
 });
 
-pub fn build_delete_liquidation_auction(e: &Env, from: &Address) {
+pub(crate) fn build_delete_liquidation_auction(_e: &Env, _from: &Address) {
 }
 
-pub(crate) fn positions_hf_under(e: &Env, pool: &mut Pool, positions: &Positions, hf: i128) -> bool {
+pub(crate) fn positions_hf_under(_e: &Env, _pool: &mut Pool, _positions: &Positions, _hf: i128) -> bool {
     model::set_checked();
     nondet::nondet()
 }
@@ -196,14 +113,14 @@ pub(crate) fn positions_hf_under(e: &Env, pool: &mut Pool, positions: &Positions
 /// This spec is proved sound (modulo notes above) in spec::build_actions_from_request
 pub fn build_actions_from_request(
     e: &Env,
-    pool: &mut Pool,
+    _pool: &mut Pool,
     from: &Address,
-    requests: Vec<Request>,
+    _requests: Vec<Request>,
 ) -> (Actions, User, bool) {
-    let mut actions = Actions::nondet();
+    let actions = Actions::nondet();
     let state = User::load(e, from);
     let check_health = nondet::nondet();
-    let mut new_state = User::nondet();
+    let new_state = User::nondet();
 
     // Auctions write positions
     if nondet::nondet() {

@@ -1,13 +1,11 @@
-use soroban_sdk::{contracttype, Address, Env, Map, Vec};
-use certora_soroban_macros::{declare_rules, rule};
 use certora;
-use cast::i128;
-use nondet::Nondet;
-use certora_soroban_macros::{declare_summaries,Nondet};
-
-use crate::certora_specs::model;
-
-use crate::{pool::{self, User}, storage, Pool, PoolContract, PoolDataKey, Positions, Request};
+use certora_soroban_macros::rule;
+use crate::{
+    certora_specs::model,
+    pool::{self, User},
+    Request
+};
+use soroban_sdk::{Address, Env};
 
 pub fn should_check(orig_state: &User, state: &User) -> bool {
     let idx = model::skolem_i();
@@ -39,7 +37,7 @@ pub fn build_actions_from_request(env: &Env, from: Address, requests: soroban_sd
 }
 
 #[rule]
-pub fn user_health(env: &Env, user: Address, thing: Address, req: soroban_sdk::Vec<Request>) {
+pub fn user_health(env: &Env, user: Address, req: soroban_sdk::Vec<Request>) {
     use pool::submit::execute_submit;
     model::init();
 

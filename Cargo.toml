@@ -30,8 +30,7 @@ git = "https://github.com/Certora/solana-cvt.git"
 branch = "dev-soroban"
 
 [workspace.dependencies.certora-soroban]
-git = "https://github.com/Certora/solana-cvt.git"
-branch = "dev-soroban"
+path = "/Users/alexanderbakst/W/solana-cvt/certora-soroban"
 
 [workspace.dependencies.certora-soroban-macros]
 path = "/Users/alexanderbakst/W/solana-cvt/certora-soroban-macros"

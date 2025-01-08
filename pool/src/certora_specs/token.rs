@@ -1,6 +1,7 @@
 use soroban_sdk::{Env, Address, String};
 use certora_soroban_macros::certora_contractclient as mockclient;
 
+#[allow(unused)]
 #[mockclient(name = "TokenClient")]
 trait TokenInterface {
     fn allowance(env: Env, from: Address, spender: Address) -> i128;

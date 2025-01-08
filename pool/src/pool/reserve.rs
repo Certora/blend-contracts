@@ -2,7 +2,6 @@ use cast::i128;
 use soroban_fixed_point_math::FixedPoint;
 use soroban_sdk::{contracttype, panic_with_error, unwrap::UnwrapOptimized, Address, Env};
 use certora_soroban_macros::*;
-use nondet::Nondet;
 
 use crate::{
     constants::{SCALAR_7, SCALAR_9},

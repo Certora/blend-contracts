@@ -2,7 +2,7 @@
 use crate::certora_specs::token::TokenClient;
 #[cfg(not(feature = "certora"))]
 use sep_41_token::TokenClient;
-use soroban_sdk::{panic_with_error, Address, Env, Vec, unwrap::UnwrapOptimized};
+use soroban_sdk::{panic_with_error, Address, Env, Vec};
 
 use crate::PoolError;
 
@@ -13,6 +13,7 @@ use super::{
     Positions,
 };
 
+use certora_soroban::apply_summary;
 use crate::certora_specs::summaries;
 
 /// Execute a set of updates for a user against the pool.
@@ -68,7 +69,8 @@ pub fn execute_submit(
     new_from_state.positions
 }
 
-summaries::apply_summary!(
+apply_summary!(
+summaries::positions_hf_under,
 fn positions_hf_under(e: &Env, pool: &mut Pool, positions: &Positions, hf: i128) -> bool {
     PositionData::calculate_from_positions(e, pool, positions)
         .is_hf_under(1_0000100)
@@ -324,7 +326,7 @@ mod tests {
             max_positions: 2,
         };
         e.as_contract(&pool, || {
-            storage::set_pool_config(&e, &pool_config);
+            storagea:set_pool_config(&e, &pool_config);
 
             let requests = vec![
                 &e,

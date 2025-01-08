@@ -1,5 +1,5 @@
 use soroban_sdk::{map, panic_with_error, unwrap::UnwrapOptimized, vec, Address, Env, Map, Vec};
-use crate::certora_specs::summaries;
+use certora_soroban::apply_summary;
 
 use sep_40_oracle::{Asset, PriceFeedClient};
 
@@ -32,13 +32,13 @@ impl Pool {
         }
     }
 
+    apply_summary!(load_reserve_spec, load_reserve_old,
     /// Load a Reserve from the ledger and update to the current ledger timestamp. Returns
     /// a cached version if it exists.
     ///
     /// ### Arguments
     /// * asset - The address of the underlying asset
     /// * store - If the reserve is expected to be stored to the ledger
-    summaries::apply_summary!(load_reserve_spec, load_reserve_old,
     pub fn load_reserve(&mut self, e: &Env, asset: &Address, store: bool) -> Reserve {
         if store && !self.reserves_to_store.contains(asset) {
             self.reserves_to_store.push_back(asset.clone());
@@ -51,7 +51,7 @@ impl Pool {
         }
     });
 
-    pub(crate) fn load_reserve_spec(&mut self, e: &Env, asset: &Address, store: bool) -> Reserve {
+    pub(crate) fn load_reserve_spec(&mut self, _e: &Env, asset: &Address, store: bool) -> Reserve {
         if store && !self.reserves_to_store.contains(asset) {
             self.reserves_to_store.push_back(asset.clone());
         }
