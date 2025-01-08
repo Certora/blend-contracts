@@ -1,4 +1,5 @@
 use soroban_sdk::{map, panic_with_error, unwrap::UnwrapOptimized, vec, Address, Env, Map, Vec};
+use crate::certora_specs::summaries;
 
 use sep_40_oracle::{Asset, PriceFeedClient};
 
@@ -37,6 +38,7 @@ impl Pool {
     /// ### Arguments
     /// * asset - The address of the underlying asset
     /// * store - If the reserve is expected to be stored to the ledger
+    summaries::apply_summary!(load_reserve_spec, load_reserve_old,
     pub fn load_reserve(&mut self, e: &Env, asset: &Address, store: bool) -> Reserve {
         if store && !self.reserves_to_store.contains(asset) {
             self.reserves_to_store.push_back(asset.clone());
@@ -47,6 +49,19 @@ impl Pool {
         } else {
             Reserve::load(e, &self.config, asset)
         }
+    });
+
+    pub(crate) fn load_reserve_spec(&mut self, e: &Env, asset: &Address, store: bool) -> Reserve {
+        if store && !self.reserves_to_store.contains(asset) {
+            self.reserves_to_store.push_back(asset.clone());
+        }
+
+        let res: Reserve = nondet::nondet();
+        certora::require!(
+            res.b_rate > 0 && res.d_rate > 0,
+            "d_rate, b_rate positive"
+        );
+        res
     }
 
     /// Cache the updated reserve in the pool.

@@ -3,7 +3,7 @@ use soroban_sdk::{
     String, Symbol, TryFromVal, Val, Vec,
 };
 
-use crate::{auctions::AuctionData, pool::Positions, PoolError};
+use crate::{auctions::AuctionData, pool::{self, Positions}, PoolError};
 
 /********** Ledger Thresholds **********/
 

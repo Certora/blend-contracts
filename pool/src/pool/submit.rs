@@ -1,5 +1,8 @@
+#[cfg(feature = "certora")]
+use crate::certora_specs::token::TokenClient;
+#[cfg(not(feature = "certora"))]
 use sep_41_token::TokenClient;
-use soroban_sdk::{panic_with_error, Address, Env, Vec};
+use soroban_sdk::{panic_with_error, Address, Env, Vec, unwrap::UnwrapOptimized};
 
 use crate::PoolError;
 
@@ -9,6 +12,8 @@ use super::{
     pool::Pool,
     Positions,
 };
+
+use crate::certora_specs::summaries;
 
 /// Execute a set of updates for a user against the pool.
 ///
@@ -42,8 +47,7 @@ pub fn execute_submit(
     // min is 1.0000100 to prevent rounding errors
     if check_health
         && new_from_state.has_liabilities()
-        && PositionData::calculate_from_positions(e, &mut pool, &new_from_state.positions)
-            .is_hf_under(1_0000100)
+        && positions_hf_under(e, &mut pool, &new_from_state.positions, 1_0000100)
     {
         panic_with_error!(e, PoolError::InvalidHf);
     }
@@ -61,9 +65,15 @@ pub fn execute_submit(
     for (address, amount) in actions.pool_transfer.iter() {
         TokenClient::new(e, &address).transfer(&e.current_contract_address(), to, &amount);
     }
-
     new_from_state.positions
 }
+
+summaries::apply_summary!(
+fn positions_hf_under(e: &Env, pool: &mut Pool, positions: &Positions, hf: i128) -> bool {
+    PositionData::calculate_from_positions(e, pool, positions)
+        .is_hf_under(1_0000100)
+}
+);
 
 #[cfg(test)]
 mod tests {

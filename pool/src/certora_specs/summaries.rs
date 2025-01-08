@@ -8,60 +8,87 @@ use crate::pool::{
 };
 use nondet::*;
 
-macro_rules! apply_named_summary {
-    ($summ:ident, $rename:ident, $vis:vis fn $id:ident(&mut $self:ident, $($arg:ident : $arg_ty:ty),*) -> $ret:ty $body:block) => {
-        #[cfg(feature="certora")]
-        $vis fn $id(&mut $self, $($arg : $arg_ty),*) -> $ret {
-            $self.$summ($($arg),*)
-        }
-
-        #[cfg(feature="certora")]
-        pub(crate) fn $rename(&mut $self, $($arg : $arg_ty),*) -> $ret $body
-
-        #[cfg(not(feature="certora"))]
-        $vis fn $id(&mut $self, $($arg : $arg_ty),*) -> $ret $body
-    };
-}
+/// This will not replace any recursive calls to the summarized function
 macro_rules! apply_summary {
-    ($vis:vis fn $id:ident($($arg:ident : $arg_ty:ty),*) -> $ret:ty $body:block) => {
-        #[cfg(feature="certora")]
-        pub(crate) fn $id($($arg : $arg_ty),*) -> $ret {
-            crate::certora_specs::summaries::$id($($arg),*)
-        }
-
+    (@mk_orig_module $id:ident, [$($prototype:tt)*], $( -> $ret:ty )?, $body:block) => {
         #[cfg(feature="certora")]
         pub(crate) mod $id {
             use super::*;
-            pub(crate) fn $id($($arg : $arg_ty),*) -> $ret $body
+            #[allow(dead_code)]
+            #[allow(unused_variables)]
+            pub(crate) fn $id($($prototype)*) $( -> $ret )? $body
         }
+    };
+    (@mk_orig $( #[$meta:meta] )*, $id:ident, [$($prototype:tt)*], $( -> $ret:ty )?, $body:block) => {
+        $( #[$meta] )*
+        $vis fn $id($($prototype)*) $( -> $ret )? $body
+    };
+    (
+        $( #[$meta:meta]  )*
+        $vis:vis fn $id:ident ($($arg:ident : $arg_ty:ty),* $(,)?) $( -> $ret:ty )?
+        $body:block
+    ) => {
+        #[cfg(feature="certora")]
+        pub(crate) fn $id($($arg : $arg_ty),*) $( -> $ret )? {
+            $crate::certora_specs::summaries::$id($($arg),*)
+        }
+
+        $crate::certora_specs::summaries::apply_summary!(
+            @mk_orig_module $id, [$($arg : $arg_ty),*], $( -> $ret  )?, $body
+        );
 
         #[cfg(not(feature="certora"))]
-        $vis fn $id($($arg : $arg_ty),*) -> $ret $body
+        $crate::certora_specs::summaries::apply_summary!(@mk_orig $( #[$meta] )*, $id, [$($arg : $arg_ty),*], $( -> $ret  )?, $body);
     };
-    ($vis:vis fn $id:ident($($arg:ident : $arg_ty:ty),*) $body:block) => {
+
+    ($spec:ident, $old:ident,
+        $( #[$meta:meta]  )*
+        $vis:vis fn $id:ident (&mut $self:ident $( , )? $($arg:ident : $arg_ty:ty),* $(,)?) $( -> $ret:ty )?
+        $body:block
+    ) => {
         #[cfg(feature="certora")]
-        pub(crate) fn $id($($arg : $arg_ty),*) {
-            crate::certora_specs::summaries::$id($($arg),*)
+        pub(crate) fn $id(&mut $self, $($arg : $arg_ty),*) $( -> $ret )? {
+            $self.$spec($($arg),*)
         }
 
-        #[cfg(feature="certora")]
-        pub(crate) mod $id {
-            use super::*;
-            pub(crate) fn $id($($arg : $arg_ty),*) $body
-        }
+        pub(crate) fn $old(&mut $self, $($arg : $arg_ty),*) $( -> $ret )? $body
 
         #[cfg(not(feature="certora"))]
-        $vis fn $id($($arg : $arg_ty),*) $body
+        $crate::certora_specs::summaries::apply_summary!(@mk_orig $( #[$meta] )*, $id, [&mut $self, $($arg : $arg_ty),*], $( -> $ret  )?, $body);
     };
-    ($id:ident($($arg:expr),*)) => {
-        if cfg!(feature="certora") {
-            crate::certora_specs::summaries::$id($($arg),*)
-        } else {
-            $id($($arg),*)
+
+    ($spec:ident, $old:ident,
+        $( #[$meta:meta]  )*
+        $vis:vis fn $id:ident (&$self:ident $( , )? $($arg:ident : $arg_ty:ty),* $(,)?) $( -> $ret:ty )?
+        $body:block
+    ) => {
+        #[cfg(feature="certora")]
+        pub(crate) fn $id(&$self, $($arg : $arg_ty),*) $( -> $ret )? {
+            $self.$spec($($arg),*)
         }
+
+        pub(crate) fn $old(&$self, $($arg : $arg_ty),*) $( -> $ret )? $body
+
+        #[cfg(not(feature="certora"))]
+        $crate::certora_specs::summaries::apply_summary!(@mk_orig $( #[$meta] )*, $id, [&$self, $($arg : $arg_ty),*], $( -> $ret  )?, $body);
+    };
+
+    ($spec:ident, $old:ident,
+        $( #[$meta:meta]  )*
+        $vis:vis fn $id:ident ($self:ident $( , )? $($arg:ident : $arg_ty:ty),* $(,)?) $( -> $ret:ty )?
+        $body:block
+    ) => {
+        #[cfg(feature="certora")]
+        pub(crate) fn $id($self, $($arg : $arg_ty),*) $( -> $ret )? {
+            $self.$spec($($arg),*)
+        }
+
+        pub(crate) fn $old($self, $($arg : $arg_ty),*) $( -> $ret )? $body
+
+        #[cfg(not(feature="certora"))]
+        $crate::certora_specs::summaries::apply_summary!(@mk_orig $( #[$meta] )*, $id, [$self, $($arg : $arg_ty),*], $( -> $ret  )?, $body);
     };
 }
-pub(crate) use apply_named_summary;
 pub(crate) use apply_summary;
 
 /// N.B. these summaries do not model storage outside of positions,
@@ -93,6 +120,7 @@ macro_rules! arb_positions {
 
 macro_rules! actions_summary {
     ($f:ident, $state:ident, $body:block) => {
+        #[allow(unused)]
         pub fn $f(_e: &Env,
                   _pool: &mut Pool,
                   _from: &Address,
@@ -103,6 +131,7 @@ macro_rules! actions_summary {
             $body
     };
     ($f:ident, $e:ident, $state:ident, $body:block) => {
+        #[allow(unused)]
         pub fn $f($e: &Env,
                   _pool: &mut Pool,
                   _from: &Address,
