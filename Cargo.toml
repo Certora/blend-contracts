@@ -30,13 +30,16 @@ git = "https://github.com/Certora/solana-cvt.git"
 branch = "dev-soroban"
 
 [workspace.dependencies.certora-soroban]
-path = "/Users/alexanderbakst/W/solana-cvt/certora-soroban"
+git = "https://github.com/Certora/solana-cvt.git"
+branch = "abakst/dev-soroban"
 
 [workspace.dependencies.certora-soroban-macros]
-path = "/Users/alexanderbakst/W/solana-cvt/certora-soroban-macros"
+git = "https://github.com/Certora/solana-cvt.git"
+branch = "abakst/dev-soroban"
 
 [workspace.dependencies.nondet]
-path = "/Users/alexanderbakst/W/solana-cvt/nondet"
+git = "https://github.com/Certora/solana-cvt.git"
+branch = "abakst/dev-soroban"
 default-features = false
 features = ["soroban"]
 

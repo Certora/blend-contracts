@@ -326,7 +326,7 @@ mod tests {
             max_positions: 2,
         };
         e.as_contract(&pool, || {
-            storagea:set_pool_config(&e, &pool_config);
+            storage::set_pool_config(&e, &pool_config);
 
             let requests = vec![
                 &e,
