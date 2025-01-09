@@ -5,7 +5,7 @@ use crate::{auctions, errors::PoolError, validator::require_nonnegative};
 
 use super::pool::Pool;
 use super::User;
-use crate::certora_specs::summaries;
+use crate::certora::summaries;
 use certora_soroban_macros::Nondet;
 use certora_soroban::apply_summary;
 
@@ -90,8 +90,8 @@ impl Actions {
 }
 
 apply_summary!(
-summaries::build_supply_action,
-pub(crate) fn build_supply_action(e: &Env, pool: &mut Pool, from: &Address, address: &Address, amount: i128, from_state: &mut User, actions: &mut Actions) {
+summaries::build_supply,
+pub(crate) fn build_supply(e: &Env, pool: &mut Pool, from: &Address, address: &Address, amount: i128, from_state: &mut User, actions: &mut Actions) {
     let mut reserve = pool.load_reserve(e, address, true);
     let b_tokens_minted = reserve.to_b_token_down(amount);
     from_state.add_supply(e, &mut reserve, b_tokens_minted);
@@ -108,8 +108,8 @@ pub(crate) fn build_supply_action(e: &Env, pool: &mut Pool, from: &Address, addr
 });
 
 apply_summary!(
-summaries::build_withdraw_action,
-pub(crate) fn build_withdraw_action(e: &Env, pool: &mut Pool, from: &Address, address: &Address, amount: i128, from_state: &mut User, actions: &mut Actions) {
+summaries::build_withdraw,
+pub(crate) fn build_withdraw(e: &Env, pool: &mut Pool, from: &Address, address: &Address, amount: i128, from_state: &mut User, actions: &mut Actions) {
     let mut reserve = pool.load_reserve(e, address, true);
     let cur_b_tokens = from_state.get_supply(reserve.index);
     let mut to_burn = reserve.to_b_token_up(amount);
@@ -340,10 +340,10 @@ pub(crate) fn build_action_from_request(e: &Env, pool: &mut Pool, from: &Address
 
     match RequestType::from_u32(e, request.request_type) {
         RequestType::Supply =>
-            build_supply_action(e, pool, from, &request.address, request.amount, from_state, actions),
+            build_supply(e, pool, from, &request.address, request.amount, from_state, actions),
 
         RequestType::Withdraw =>
-            build_withdraw_action(e, pool, from, &request.address, request.amount, from_state, actions),
+            build_withdraw(e, pool, from, &request.address, request.amount, from_state, actions),
 
         RequestType::SupplyCollateral =>
             build_supply_collateral(e, pool, from, &request.address, request.amount, from_state, actions),
