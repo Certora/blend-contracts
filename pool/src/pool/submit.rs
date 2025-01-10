@@ -1,5 +1,5 @@
 #[cfg(feature = "certora")]
-use crate::certora::token::TokenClient;
+use crate::spec::token::TokenClient;
 #[cfg(not(feature = "certora"))]
 use sep_41_token::TokenClient;
 use soroban_sdk::{panic_with_error, Address, Env, Vec};
@@ -14,7 +14,7 @@ use super::{
 };
 
 use certora_soroban::apply_summary;
-use crate::certora::summaries;
+use crate::spec::summaries;
 
 /// Execute a set of updates for a user against the pool.
 ///

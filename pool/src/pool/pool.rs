@@ -32,6 +32,9 @@ impl Pool {
         }
     }
 
+    // This macro invocation uses `load_reserve_spec` as the implementation
+    // for this method when `cfg(feature = "certora")` and saves
+    // the original implementation as `load_reserve_old`
     apply_summary!(load_reserve_spec, load_reserve_old,
     /// Load a Reserve from the ledger and update to the current ledger timestamp. Returns
     /// a cached version if it exists.

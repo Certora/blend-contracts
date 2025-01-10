@@ -5,7 +5,7 @@ use crate::{auctions, errors::PoolError, validator::require_nonnegative};
 
 use super::pool::Pool;
 use super::User;
-use crate::certora::summaries;
+use crate::spec::summaries;
 use certora_soroban_macros::Nondet;
 use certora_soroban::apply_summary;
 

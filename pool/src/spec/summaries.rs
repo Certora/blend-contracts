@@ -1,5 +1,5 @@
 use soroban_sdk::{Env, Address, Vec};
-use crate::certora::model;
+use crate::spec::model;
 use crate::{Request, Positions};
 use crate::pool::{
     User,
@@ -60,8 +60,6 @@ macro_rules! actions_summary {
     }
 }
 
-//TODO havoc actions vs. nondet
-//TODO need to havoc supply at all for repay etc etc?
 actions_summary!(build_supply, from_state, {
     arb_positions!(from_state.positions, supply, amount, amount);
 });
@@ -110,6 +108,14 @@ pub(crate) fn positions_hf_under(_e: &Env, _pool: &mut Pool, _positions: &Positi
     nondet::nondet()
 }
 
+pub fn build_actions_from_request_postcondition(
+    check_health: bool,
+    pre_user: &User,
+    post_user: &User,
+) -> bool {
+    check_health || !crate::spec::rules::should_check(&pre_user, &post_user)
+}
+
 /// This spec is proved sound (modulo notes above) in spec::build_actions_from_request
 pub fn build_actions_from_request(
     e: &Env,
@@ -127,8 +133,9 @@ pub fn build_actions_from_request(
         new_state.store(e);
     }
 
+    // Assume the postcondition
     certora::require!(
-        check_health || !crate::certora::spec::should_check(&state, &new_state),
+        build_actions_from_request_postcondition(check_health, &state, &new_state),
         "build action invariant"
     );
 

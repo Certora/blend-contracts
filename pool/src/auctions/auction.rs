@@ -154,7 +154,6 @@ pub fn fill(
         panic_with_error!(e, PoolError::InvalidLiquidation);
     }
     let auction_data = storage::get_auction(e, &auction_type, user);
-    // Just nondet stuff?
     let (to_fill_auction, remaining_auction) = scale_auction(e, &auction_data, percent_filled);
     match AuctionType::from_u32(e, auction_type) {
         AuctionType::UserLiquidation => {
