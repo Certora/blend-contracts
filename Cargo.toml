@@ -27,7 +27,7 @@ lto = true
 
 [workspace.dependencies.certora]
 git = "https://github.com/Certora/solana-cvt.git"
-branch = "dev-soroban"
+branch = "abakst/dev-soroban"
 
 [workspace.dependencies.certora-soroban]
 git = "https://github.com/Certora/solana-cvt.git"

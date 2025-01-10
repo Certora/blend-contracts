@@ -6,8 +6,8 @@ use crate::{auctions, errors::PoolError, validator::require_nonnegative};
 use super::pool::Pool;
 use super::User;
 use crate::spec::summaries;
+use certora::apply_summary;
 use certora_soroban_macros::Nondet;
-use certora_soroban::apply_summary;
 
 /// A request a user makes against the pool
 #[derive(Clone,Nondet)]

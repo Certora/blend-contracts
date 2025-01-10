@@ -1,5 +1,5 @@
 use soroban_sdk::{map, panic_with_error, unwrap::UnwrapOptimized, vec, Address, Env, Map, Vec};
-use certora_soroban::apply_summary;
+use certora::apply_summary;
 
 use sep_40_oracle::{Asset, PriceFeedClient};
 

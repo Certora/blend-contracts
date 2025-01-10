@@ -13,7 +13,7 @@ use super::{
     Positions,
 };
 
-use certora_soroban::apply_summary;
+use certora::apply_summary;
 use crate::spec::summaries;
 
 /// Execute a set of updates for a user against the pool.
