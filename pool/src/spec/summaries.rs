@@ -104,8 +104,14 @@ pub(crate) fn build_delete_liquidation_auction(_e: &Env, _from: &Address) {
 }
 
 pub(crate) fn positions_hf_under(_e: &Env, _pool: &mut Pool, _positions: &Positions, _hf: i128) -> bool {
-    model::set_checked();
-    nondet::nondet()
+    let check_result = bool::nondet();
+
+    // If this function returns `true` then the health factor is too low
+    // so we set the checked flag if we're returning `false`
+    if !check_result {
+        model::set_checked();
+    }
+    check_result
 }
 
 pub fn build_actions_from_request_postcondition(
