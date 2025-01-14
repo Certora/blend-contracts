@@ -13,7 +13,7 @@ COMMAND = "just build"
 
 # JSON FIELDS
 PROJECT_DIR = (SCRIPT_DIR / "../").resolve()
-SOURCES = ["pool/src/**/*.rs", "Cargo.toml", "pool/Cargo.toml"]
+SOURCES = ["pool/src/**/*.rs", "backstop/src/*.rs", "Cargo.toml", "pool/Cargo.toml"]
 EXECUTABLES = "target/wasm32-unknown-unknown/release/pool.wasm"
 
 VERBOSE = False
@@ -99,4 +99,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

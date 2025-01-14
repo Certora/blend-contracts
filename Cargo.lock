@@ -167,7 +167,7 @@ dependencies = [
 [[package]]
 name = "certora"
 version = "0.1.0"
-source = "git+https://github.com/Certora/solana-cvt.git?branch=abakst/dev-soroban#21ce57e5dca4a159d026ba3a1185663dc0c79837"
+source = "git+https://github.com/Certora/solana-cvt.git?branch=dev-soroban#1efb04a09b97ae61dfbb93bd80cd7d2ab6ddfe25"
 dependencies = [
  "stubs",
 ]
@@ -175,7 +175,7 @@ dependencies = [
 [[package]]
 name = "certora-soroban"
 version = "0.1.0"
-source = "git+https://github.com/Certora/solana-cvt.git?branch=abakst/dev-soroban#21ce57e5dca4a159d026ba3a1185663dc0c79837"
+source = "git+https://github.com/Certora/solana-cvt.git?branch=dev-soroban#1efb04a09b97ae61dfbb93bd80cd7d2ab6ddfe25"
 dependencies = [
  "soroban-sdk",
 ]
@@ -183,7 +183,7 @@ dependencies = [
 [[package]]
 name = "certora-soroban-macros"
 version = "0.1.0"
-source = "git+https://github.com/Certora/solana-cvt.git?branch=abakst/dev-soroban#21ce57e5dca4a159d026ba3a1185663dc0c79837"
+source = "git+https://github.com/Certora/solana-cvt.git?branch=dev-soroban#1efb04a09b97ae61dfbb93bd80cd7d2ab6ddfe25"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -743,7 +743,7 @@ dependencies = [
 [[package]]
 name = "nondet"
 version = "0.2.0"
-source = "git+https://github.com/Certora/solana-cvt.git?branch=abakst/dev-soroban#21ce57e5dca4a159d026ba3a1185663dc0c79837"
+source = "git+https://github.com/Certora/solana-cvt.git?branch=dev-soroban#1efb04a09b97ae61dfbb93bd80cd7d2ab6ddfe25"
 dependencies = [
  "certora",
  "soroban-sdk",
@@ -1397,7 +1397,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stubs"
 version = "0.1.0"
-source = "git+https://github.com/Certora/solana-cvt.git?branch=abakst/dev-soroban#21ce57e5dca4a159d026ba3a1185663dc0c79837"
+source = "git+https://github.com/Certora/solana-cvt.git?branch=dev-soroban#1efb04a09b97ae61dfbb93bd80cd7d2ab6ddfe25"
 
 [[package]]
 name = "subtle"
