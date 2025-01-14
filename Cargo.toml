@@ -19,17 +19,35 @@ debug-assertions = true
 opt-level = "z"
 overflow-checks = true # DEV: Do not remove this check - doing so will create vulnerabilities
 debug = 0
-strip = "symbols"
+strip = "none"
 debug-assertions = false
 panic = "abort"
 codegen-units = 1
 lto = true
 
+[workspace.dependencies.certora]
+git = "https://github.com/Certora/solana-cvt.git"
+branch = "dev-soroban"
+
+[workspace.dependencies.certora-soroban]
+git = "https://github.com/Certora/solana-cvt.git"
+branch = "dev-soroban"
+
+[workspace.dependencies.certora-soroban-macros]
+git = "https://github.com/Certora/solana-cvt.git"
+branch = "dev-soroban"
+
+[workspace.dependencies.nondet]
+git = "https://github.com/Certora/solana-cvt.git"
+branch = "dev-soroban"
+default-features = false
+features = ["soroban"]
+
 [workspace.dependencies.soroban-sdk]
 version = "20.5.0"
 
 [workspace.dependencies.soroban-fixed-point-math]
-version = "1.0.0"
+version = "=1.0.0"
 
 [workspace.dependencies.cast]
 version = "0.3.0"

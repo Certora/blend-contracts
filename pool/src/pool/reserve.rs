@@ -1,6 +1,7 @@
 use cast::i128;
 use soroban_fixed_point_math::FixedPoint;
 use soroban_sdk::{contracttype, panic_with_error, unwrap::UnwrapOptimized, Address, Env};
+use certora_soroban_macros::*;
 
 use crate::{
     constants::{SCALAR_7, SCALAR_9},
@@ -10,7 +11,7 @@ use crate::{
 
 use super::interest::calc_accrual;
 
-#[derive(Clone)]
+#[derive(Clone,Nondet)]
 #[contracttype]
 pub struct Reserve {
     pub asset: Address,        // the underlying asset address

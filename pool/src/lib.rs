@@ -16,7 +16,8 @@ mod storage;
 mod testutils;
 mod validator;
 
-mod certora_specs;
+#[cfg(feature = "certora")]
+mod spec;
 
 pub use auctions::{AuctionData, AuctionType};
 pub use contract::*;

@@ -1,11 +1,12 @@
 use soroban_sdk::{contracttype, panic_with_error, Address, Env, Map};
+use certora_soroban_macros::Nondet;
 
 use crate::{emissions, storage, validator::require_nonnegative, PoolError};
 
 use super::{Pool, Reserve};
 
 /// A user / contracts position's with the pool, stored in the Reserve's decimals
-#[derive(Clone)]
+#[derive(Clone, Nondet)]
 #[contracttype]
 pub struct Positions {
     pub liabilities: Map<u32, i128>, // Map of Reserve Index to liability share balance
@@ -33,7 +34,7 @@ impl Positions {
 }
 
 /// A user / contracts position's with the pool
-#[derive(Clone)]
+#[derive(Clone, Nondet)]
 pub struct User {
     pub address: Address,
     pub positions: Positions,
