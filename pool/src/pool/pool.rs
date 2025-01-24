@@ -54,6 +54,7 @@ impl Pool {
         }
     });
 
+    #[cfg(feature="certora")]
     pub(crate) fn load_reserve_spec(&mut self, _e: &Env, asset: &Address, store: bool) -> Reserve {
         if store && !self.reserves_to_store.contains(asset) {
             self.reserves_to_store.push_back(asset.clone());

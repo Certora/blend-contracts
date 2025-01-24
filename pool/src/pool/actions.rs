@@ -5,6 +5,7 @@ use crate::{auctions, errors::PoolError, validator::require_nonnegative};
 
 use super::pool::Pool;
 use super::User;
+#[cfg(feature = "certora")]
 use crate::spec::summaries;
 use certora::apply_summary;
 use certora_soroban_macros::Nondet;
@@ -237,7 +238,7 @@ fn build_fill_user_liquidation_auction(
     address: &Address,
     amount: i128,
     from_state: &mut User,
-    actions: &mut Actions
+    _actions: &mut Actions
 ) {
     auctions::fill(
         e,
@@ -268,7 +269,7 @@ fn build_fill_bad_debt_auction(
     address: &Address,
     amount: i128,
     from_state: &mut User,
-    actions: &mut Actions
+    _actions: &mut Actions
 ) {
     // Note: will fail if input address is not the backstop since there cannot be a bad debt auction for a different address in storage
     auctions::fill(
@@ -300,7 +301,7 @@ fn build_fill_interest_auction(
     address: &Address,
     amount: i128,
     from_state: &mut User,
-    actions: &mut Actions
+    _actions: &mut Actions
 ) {
     // Note: will fail if input address is not the backstop since there cannot be an interest auction for a different address in storage
     auctions::fill(
