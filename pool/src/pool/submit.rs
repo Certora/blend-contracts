@@ -14,6 +14,7 @@ use super::{
 };
 
 use certora::apply_summary;
+#[cfg(feature = "certora")]
 use crate::spec::summaries;
 
 /// Execute a set of updates for a user against the pool.
@@ -73,7 +74,7 @@ apply_summary!(
 summaries::positions_hf_under,
 fn positions_hf_under(e: &Env, pool: &mut Pool, positions: &Positions, hf: i128) -> bool {
     PositionData::calculate_from_positions(e, pool, positions)
-        .is_hf_under(1_0000100)
+        .is_hf_under(hf)
 }
 );
 
